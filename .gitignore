@@ -1,41 +1,50 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# --- Build Artifacts ---
+# Ignore the entire build/ directory
+build/
+bin/
+obj/
+*.o
+*.out
+*.exe
+*.log
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# --- CMake (The most important for you) ---
+# Ignore CMake cache and generated files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_install.cmake
+Makefile
+compile_commands.json
 
-# testing
-/coverage
+# --- vcpkg (Package Manager) ---
+# Ignore the installed vcpkg dependencies
+vcpkg_installed/
+vcpkg_packages/
 
-# next.js
-/.next/
-/out/
+# --- IDE & Editor Clutter ---
+# Visual Studio / VS Code
+.vscode/
+.vs/
+*.user
+*.suo
+*.db
 
-# production
-/build
-
-# misc
+# Linux / MacOS System files
 .DS_Store
+*.swp
+*~
+
+# --- Scripts & Execution ---
+# If you keep secret keys or local test scripts, keep them ignored
+*.key
 *.pem
+local_test.sh
+debug_output.txt
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# --- Your Application Specifics ---
+# If you are saving output data or logs from 'trace'
+*.json
+*.html
+*.txt
