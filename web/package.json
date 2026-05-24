@@ -38,6 +38,7 @@
 	},
 	"dependencies": {
 		"@lucide/svelte": "^1.16.0",
+		"sass-embedded": "^1.100.0",
 		"vite": "^8.0.7"
 	}
 }

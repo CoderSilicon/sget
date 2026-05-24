@@ -1,5 +1,5 @@
-![trace](web/src/lib/assets/logo.png)
-# Trace
+![sget](web/src/lib/assets/favicon.png)
+# sget
 
 > **The CLI data-tracer.** A smart, advanced web scraper and data extractor built on top of `curl`.
 
@@ -11,11 +11,11 @@
 
 ## ⚡ The Core Philosophy
 
-Trace operates directly on raw HTTP streams. It treats the web as a queryable data pipeline rather than a visual canvas, making it incredibly lightweight and lightning-fast.
+sget operates directly on raw HTTP streams. It treats the web as a queryable data pipeline rather than a visual canvas, making it incredibly lightweight and lightning-fast.
 
-* **`curl`-Powered Core:** Built straight on top of the industry standard for network requests. If `curl` can reach it, Trace can extract from it.
+* **`curl`-Powered Core:** Built straight on top of the industry standard for network requests. If `curl` can reach it, sget can extract from it.
 * **Zero Engine Overhead:** No Chromium instances, no heavy JS evaluation loops, and zero memory leaks. Just pure data parsing.
-* **Unix-Pipeline Native:** Seamlessly fits into your existing workflow. Pipe HTML/JSON into Trace, or pipe Trace's structured output straight into `jq`, `grep`, or local files.
+* **Unix-Pipeline Native:** Seamlessly fits into your existing workflow. Pipe HTML/JSON into sget, or pipe sget's structured output straight into `jq`, `grep`, or local files.
 
 ---
 
@@ -33,7 +33,7 @@ Trace operates directly on raw HTTP streams. It treats the web as a queryable da
 │
 ▼  (Raw Data Stream)
 ┌───────┐
-│ trace │ ──► [ Extraction Engine: CSS Selectors / XPath / Regex ]
+│ sget │ ──► [ Extraction Engine: CSS Selectors / XPath / Regex ]
 └───────┘
 │
 ▼  (Structured Output Flush)
@@ -41,12 +41,12 @@ Trace operates directly on raw HTTP streams. It treats the web as a queryable da
 
 ```
 
-1. **The Fetch:** Trace utilizes native network optimization layers via `curl` for highly stable, low-level HTTP requests.
-2. **The Stream:** The target payload is fed instantly into Trace's memory-efficient stream parser without downloading unnecessary visual assets.
+1. **The Fetch:** sget utilizes native network optimization layers via `curl` for highly stable, low-level HTTP requests.
+2. **The Stream:** The target payload is fed instantly into sget's memory-efficient stream parser without downloading unnecessary visual assets.
 3. **The Extraction:** Your declarative filters (CSS tags, XPath nodes, or Regex boundaries) parse the DOM structure instantly.
 4. **The Output:** Structured data is flushed to `stdout` in your format of choice, completely ready for automated consumption.
 
----
+
 
 ## 🛠️ Stack & Mechanics
 
@@ -57,16 +57,16 @@ Trace operates directly on raw HTTP streams. It treats the web as a queryable da
 | **Formatting** | Stream Serializer | Instant conversion of extracted elements into structured `JSON`, `CSV`, or raw text. |
 | **Environment** | POSIX CLI | Built to run standalone inside any Linux, macOS, or Windows terminal. |
 
----
+
 
 ## 🔒 Optimization & Speed
 
-Trace is engineered from the ground up for high-performance automation:
+sget is engineered from the ground up for high-performance automation:
 * **Minimal Memory Footprint:** Uses a fraction of the RAM required by headless browsers (Puppeteer/Playwright).
 * **Parallel Scrapes:** Launch multiple data tracing threads concurrently without melting your CPU.
 * **Bypass Anti-Bot:** Native integration for rapid User-Agent rotation, custom request delays, and upstream proxy chains.
 
----
+
 
 <br />
 

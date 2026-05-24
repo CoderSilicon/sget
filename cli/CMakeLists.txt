@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Set your project name to Trace
-project(Trace CXX)
+project(sget CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,7 +20,7 @@ set(SOURCES
 )
 
 # Create the executable target named 'trace'
-add_executable(trace ${SOURCES})
+add_executable(sget ${SOURCES})
 
 # Link libcurl to your 'trace' executable
-target_link_libraries(trace PRIVATE CURL::libcurl)
+target_link_libraries(sget PRIVATE CURL::libcurl)
