@@ -1,3 +1,27 @@
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
 # --- Build Artifacts ---
 # Ignore the entire build/ directory
 build/
@@ -42,9 +66,4 @@ vcpkg_packages/
 *.pem
 local_test.sh
 debug_output.txt
-
-# --- Your Application Specifics ---
-# If you are saving output data or logs from 'trace'
-*.json
-*.html
-*.txt
+log_*.json
