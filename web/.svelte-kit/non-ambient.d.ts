@@ -39,8 +39,8 @@ declare module "$app/types" {
 			"/documentation": Record<string, never>;
 			"/download": Record<string, never>
 		};
-		Pathname(): "/" | "/about" | "/about/" | "/documentation" | "/documentation/" | "/download" | "/download/";
+		Pathname(): "/" | "/about" | "/documentation" | "/download";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
-		Asset(): "/robots.txt" | string & {};
+		Asset(): "/favicon.svg" | "/robots.txt" | string & {};
 	}
 }

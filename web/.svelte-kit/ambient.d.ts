@@ -77,6 +77,7 @@ declare module '$env/static/private' {
 	export const LOGONSERVER: string;
 	export const MIC_LD_LIBRARY_PATH: string;
 	export const NODE: string;
+	export const NODE_ENV: string;
 	export const NODE_PATH: string;
 	export const npm_command: string;
 	export const npm_config_engine_strict: string;
@@ -258,6 +259,7 @@ declare module '$env/dynamic/private' {
 		LOGONSERVER: string;
 		MIC_LD_LIBRARY_PATH: string;
 		NODE: string;
+		NODE_ENV: string;
 		NODE_PATH: string;
 		npm_command: string;
 		npm_config_engine_strict: string;
