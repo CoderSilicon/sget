@@ -1,0 +1,59 @@
+name: CMake Monorepo Build Engine
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # We test on both Linux (Ubuntu) and Windows environments natively
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
+        include:
+          - os: windows-latest
+            triplet: x64-windows
+          - os: ubuntu-latest
+            triplet: x64-linux
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    # 1. Setup Vcpkg Cache to avoid compiling curl from scratch on every push
+    - name: Restore vcpkg artifacts from cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/vcpkg
+          ${{ github.workspace }}/vcpkg/installed
+        key: ${{ matrix.os }}-vcpkg-${{ hashFiles('cli/vcpkg.json') }}
+        restore-keys: |
+          ${{ matrix.os }}-vcpkg-
+
+    # 2. Install packages
+    - name: Run vcpkg installation
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgGitCommitId: 'latest' 
+        runVcpkgInstall: true
+
+
+    # 3. Configure CMake pointing strictly to the 'cli' directory
+    - name: Configure CMake (CLI Project)
+      run: >
+        cmake -B ${{ github.workspace }}/cli/build
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -S ${{ github.workspace }}/cli
+
+    # 4. Compile the native binaries (sget / sget.exe)
+    - name: Building sget
+      run: cmake --build ${{ github.workspace }}/cli/build --config ${{ matrix.build_type }}
