@@ -26,7 +26,7 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    # 1. Setup Vcpkg Cache to avoid compiling curl from scratch on every push
+    # 1. Setup Vcpkg Cache 
     - name: Restore vcpkg artifacts from cache
       uses: actions/cache@v4
       with:
@@ -41,11 +41,11 @@ jobs:
     - name: Run vcpkg installation
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: 'latest' 
+        vcpkgGitCommitId: '13a40974b88f34384ef53f06b997e79cb5d0bf0d' 
         runVcpkgInstall: true
 
 
-    # 3. Configure CMake pointing strictly to the 'cli' directory
+    # 3. Configure CMake 
     - name: Configure CMake (CLI Project)
       run: >
         cmake -B ${{ github.workspace }}/cli/build
