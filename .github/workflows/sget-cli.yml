@@ -1,4 +1,4 @@
-name: Sget CLI Build
+name: sget CLI Build
 
 on:
   push:
@@ -13,48 +13,53 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # We test on both Linux (Ubuntu) and Windows environments natively
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
-        include:
-          - os: windows-latest
-            triplet: x64-windows
-          - os: ubuntu-latest
-            triplet: x64-linux
 
     steps:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    # 1. Setup Vcpkg Cache 
-    - name: Restore vcpkg artifacts from cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/vcpkg
-          ${{ github.workspace }}/vcpkg/installed
-        key: ${{ matrix.os }}-vcpkg-${{ hashFiles('cli/vcpkg.json') }}
-        restore-keys: |
-          ${{ matrix.os }}-vcpkg-
+    # 1. Manually clone and bootstrap vcpkg 
+    - name: Clone and Setup vcpkg
+      shell: bash
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git ${{ github.workspace }}/vcpkg
+        cd ${{ github.workspace }}/vcpkg
+        # Pin to a reliable stable snapshot release
+        git checkout 501db0f17ef6df184fcdbfcd0f87a86bbafafbc3
+        
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          ./bootstrap-vcpkg.bat
+        else
+          ./bootstrap-vcpkg.sh
+        fi
 
-    # 2. Install packages
-    - name: Run vcpkg installation
-      uses: microsoft/setup-vcpkg@v1
-      with:
-        # Verified stable release baseline commit hash
-        vcpkgGitCommitId: '501db0f17ef6df184fcdbfcd0f87a86bbafafbc3'
-        runVcpkgInstall: true
-
+    # 2. Compile curl dependency 
+    - name: Install libcurl
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          ${{ github.workspace }}/vcpkg/vcpkg install curl:x64-windows-release
+        else
+          ${{ github.workspace }}/vcpkg/vcpkg install curl
+        fi
 
     # 3. Configure CMake 
     - name: Configure CMake (CLI Project)
-      run: >
-        cmake -B ${{ github.workspace }}/cli/build
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
-        -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
-        -S ${{ github.workspace }}/cli
+      shell: bash
+      run: |
+        TRIPLET="x64-linux"
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          TRIPLET="x64-windows-release"
+        fi
+        
+        cmake -B ${{ github.workspace }}/cli/build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DVCPKG_TARGET_TRIPLET=$TRIPLET \
+          -S ${{ github.workspace }}/cli
 
-    # 4. Compile the native binaries (sget / sget.exe)
-    - name: Building sget
+    # 4. Compile the final binary
+    - name: Build C++ Binary
       run: cmake --build ${{ github.workspace }}/cli/build --config ${{ matrix.build_type }}
