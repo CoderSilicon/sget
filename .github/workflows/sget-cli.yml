@@ -41,7 +41,8 @@ jobs:
     - name: Run vcpkg installation
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: '13a40974b88f34384ef53f06b997e79cb5d0bf0d' 
+        # Verified stable release baseline commit hash
+        vcpkgGitCommitId: '501db0f17ef6df184fcdbfcd0f87a86bbafafbc3'
         runVcpkgInstall: true
 
 
