@@ -20,14 +20,16 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    # 1. Manually clone and bootstrap vcpkg 
+    # 1. Setup vcpkg 
     - name: Clone and Setup vcpkg
       shell: bash
       run: |
-        git clone https://github.com/microsoft/vcpkg.git ${{ github.workspace }}/vcpkg
-        cd ${{ github.workspace }}/vcpkg
-        # Pin to a reliable stable snapshot release
-        git checkout 501db0f17ef6df184fcdbfcd0f87a86bbafafbc3
+        git clone https://github.com/microsoft/vcpkg.git "$GITHUB_WORKSPACE/vcpkg"
+        cd "$GITHUB_WORKSPACE/vcpkg"
+        
+        # Safely fetch and pin the exact release baseline commit
+        git fetch origin 501db0f17ef6df184fcdbfcd0f87a86bbafafbc3 --depth=1
+        git checkout FETCH_HEAD
         
         if [ "$RUNNER_OS" == "Windows" ]; then
           ./bootstrap-vcpkg.bat
@@ -35,17 +37,17 @@ jobs:
           ./bootstrap-vcpkg.sh
         fi
 
-    # 2. Compile curl dependency 
+    # 2. Installing Dependencies
     - name: Install libcurl
       shell: bash
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          ${{ github.workspace }}/vcpkg/vcpkg install curl:x64-windows-release
+          "$GITHUB_WORKSPACE/vcpkg/vcpkg" install curl:x64-windows-release
         else
-          ${{ github.workspace }}/vcpkg/vcpkg install curl
+          "$GITHUB_WORKSPACE/vcpkg/vcpkg" install curl
         fi
 
-    # 3. Configure CMake 
+    # 3. Configure CMake
     - name: Configure CMake (CLI Project)
       shell: bash
       run: |
@@ -54,12 +56,12 @@ jobs:
           TRIPLET="x64-windows-release"
         fi
         
-        cmake -B ${{ github.workspace }}/cli/build \
+        cmake -B "$GITHUB_WORKSPACE/cli/build" \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DCMAKE_TOOLCHAIN_FILE="$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake" \
           -DVCPKG_TARGET_TRIPLET=$TRIPLET \
-          -S ${{ github.workspace }}/cli
+          -S "$GITHUB_WORKSPACE/cli"
 
-    # 4. Compile the final binary
+    # 4. Compile the binary
     - name: Build C++ Binary
-      run: cmake --build ${{ github.workspace }}/cli/build --config ${{ matrix.build_type }}
+      run: cmake --build "${{ github.workspace }}/cli/build" --config ${{ matrix.build_type }}
