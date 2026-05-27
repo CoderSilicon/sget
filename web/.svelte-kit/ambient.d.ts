@@ -40,7 +40,6 @@
 declare module '$env/static/private' {
 	export const ALLUSERSPROFILE: string;
 	export const APPDATA: string;
-	export const BUNDLED_DEBUGPY_PATH: string;
 	export const CABAL_DIR: string;
 	export const CHROME_CRASHPAD_PIPE_NAME: string;
 	export const COLORTERM: string;
@@ -51,13 +50,15 @@ declare module '$env/static/private' {
 	export const DataGrip: string;
 	export const Depot_Tools: string;
 	export const DriverData: string;
-	export const EFC_8516_1262719628: string;
-	export const EFC_8516_1592913036: string;
-	export const EFC_8516_2283032206: string;
-	export const EFC_8516_2775293581: string;
-	export const EFC_8516_3789132940: string;
-	export const EFC_8516_4126798990: string;
+	export const EFC_7220_1262719628: string;
+	export const EFC_7220_1592913036: string;
+	export const EFC_7220_2283032206: string;
+	export const EFC_7220_2775293581: string;
+	export const EFC_7220_3789132940: string;
+	export const EFC_7220_4126798990: string;
 	export const EMSDK_PYTHON: string;
+	export const FPS_BROWSER_APP_PROFILE_STRING: string;
+	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GHCUP_INSTALL_BASE_PREFIX: string;
 	export const GHCUP_MSYS2: string;
 	export const GHCUP_MSYS2_ENV: string;
@@ -108,7 +109,6 @@ declare module '$env/static/private' {
 	export const PROMPT: string;
 	export const PSModulePath: string;
 	export const PUBLIC: string;
-	export const PYDEVD_DISABLE_FILE_VALIDATION: string;
 	export const PYTHONSTARTUP: string;
 	export const PYTHON_BASIC_REPL: string;
 	export const SESSIONNAME: string;
@@ -123,7 +123,6 @@ declare module '$env/static/private' {
 	export const USERNAME: string;
 	export const USERPROFILE: string;
 	export const VBOX_MSI_INSTALL_PATH: string;
-	export const VSCODE_DEBUGPY_ADAPTER_ENDPOINTS: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 	export const VSCODE_GIT_ASKPASS_MAIN: string;
 	export const VSCODE_GIT_ASKPASS_NODE: string;
@@ -219,7 +218,6 @@ declare module '$env/dynamic/private' {
 	export const env: {
 		ALLUSERSPROFILE: string;
 		APPDATA: string;
-		BUNDLED_DEBUGPY_PATH: string;
 		CABAL_DIR: string;
 		CHROME_CRASHPAD_PIPE_NAME: string;
 		COLORTERM: string;
@@ -230,13 +228,15 @@ declare module '$env/dynamic/private' {
 		DataGrip: string;
 		Depot_Tools: string;
 		DriverData: string;
-		EFC_8516_1262719628: string;
-		EFC_8516_1592913036: string;
-		EFC_8516_2283032206: string;
-		EFC_8516_2775293581: string;
-		EFC_8516_3789132940: string;
-		EFC_8516_4126798990: string;
+		EFC_7220_1262719628: string;
+		EFC_7220_1592913036: string;
+		EFC_7220_2283032206: string;
+		EFC_7220_2775293581: string;
+		EFC_7220_3789132940: string;
+		EFC_7220_4126798990: string;
 		EMSDK_PYTHON: string;
+		FPS_BROWSER_APP_PROFILE_STRING: string;
+		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GHCUP_INSTALL_BASE_PREFIX: string;
 		GHCUP_MSYS2: string;
 		GHCUP_MSYS2_ENV: string;
@@ -287,7 +287,6 @@ declare module '$env/dynamic/private' {
 		PROMPT: string;
 		PSModulePath: string;
 		PUBLIC: string;
-		PYDEVD_DISABLE_FILE_VALIDATION: string;
 		PYTHONSTARTUP: string;
 		PYTHON_BASIC_REPL: string;
 		SESSIONNAME: string;
@@ -302,7 +301,6 @@ declare module '$env/dynamic/private' {
 		USERNAME: string;
 		USERPROFILE: string;
 		VBOX_MSI_INSTALL_PATH: string;
-		VSCODE_DEBUGPY_ADAPTER_ENDPOINTS: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 		VSCODE_GIT_ASKPASS_MAIN: string;
 		VSCODE_GIT_ASKPASS_NODE: string;

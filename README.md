@@ -1,10 +1,10 @@
 ![sget](web/src/lib/assets/favicon.png)
 # sget
 
-> **The CLI data-tracer.** A smart, advanced web scraper and data extractor built on top of `curl`.
+> **The CLI data-tracer.** data extractor built on top of `curl`.
 
 [![Built by CoderSilicon](https://img.shields.io/badge/Built%20by-CoderSilicon-004d40.svg?style=flat-square)](https://github.com/CoderSilicon)
-[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg?style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-None-teal.svg?style=flat-square)](LICENSE)
 
 
 ---
@@ -52,10 +52,10 @@ sget operates directly on raw HTTP streams. It treats the web as a queryable dat
 
 | Layer | Engine/Protocol | Purpose |
 | :--- | :--- | :--- |
-| **Network** | [curl](https://curl.se/) | Low-overhead HTTP transfer, custom headers, proxy handling, and cookie jars. |
-| **Parsing** | C/Go Native Engine | High-performance CSS selectors and XPath element targeting. |
-| **Formatting** | Stream Serializer | Instant conversion of extracted elements into structured `JSON`, `CSV`, or raw text. |
-| **Environment** | POSIX CLI | Built to run standalone inside any Linux, macOS, or Windows terminal. |
+| **Libraries** | [curl](https://curl.se/) | Low-overhead HTTP transfer, custom headers, proxy handling, and cookie jars. |
+| **Language** | C++ with vcpkg | It is fast. That's it. |
+| **Formatting** | Native Colors(OS) | Use of COLORS defined by the operating system itself for latency |
+| **Environment** | Docker | Containers to run standalone inside any Linux, macOS, or Windows terminal. |
 
 
 

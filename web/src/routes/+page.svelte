@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	// import { resolve } from '$app/paths';
 	// Terminal simulated output lines
 	const terminalLines = [
-		{ type: 'command', text: 'sget https://example.com --extract links' },
+		{ type: 'command', text: 'sget --links https://example.com ' },
 		{ type: 'text', text: 'Connecting to example.com...' },
 		{ type: 'status', text: 'Status: 200 OK' },
 		{ type: 'text', text: 'Content-Type: text/html' },
@@ -52,23 +52,23 @@
 	const codeExamples = [
 		{
 			id: 'extract-headings',
-			comment: '# Extract all headings',
-			command: ' https://news.site --select "h2.title" --format json'
+			comment: '# Pipe into files',
+			command: ' sget --json https://archlinux.org --output logs.json'
 		},
 		{
 			id: 'monitor-prices',
-			comment: '# Monitor price changes',
-			command: 'sget https://shop.com/item --watch --interval 30m'
+			comment: '# Security Check',
+			command: 'sget --security https://fedoraproject.org'
 		},
 		{
 			id: 'interactive-mode',
 			comment: '# Interactive mode',
-			command: 'sget -i https://api.example.com'
+			command: 'sget --info https://api.example.com'
 		}
 	];
 </script>
 
-<section class="relative min-h-screen bg-[#060709] text-white selection:bg-[#00f5c4]/30">
+<section class="relative min-h-screen bg-[#060709] text-white ">
 	<main class="mt-16 flex flex-col items-center px-5 text-center">
 		<h1
 			class="jetbrains-mono-400 mb-6 max-w-4xl font-sans text-[2.5rem] leading-[1.15] font-extrabold tracking-tight md:text-[4.2rem]"
@@ -83,7 +83,7 @@
 
 		<div class="mb-16 flex gap-4">
 			<button
-				class="jetbrains-mono-600 flex items-center gap-2 rounded bg-[#014e44] hover:bg-[#014e44b4] px-7 py-3.5 text-base font-bold text-[#060709] transition-opacity hover:opacity-90"
+				class="jetbrains-mono-600 flex items-center gap-2 rounded bg-[#014e44] hover:bg-[#014e44b4] px-7 py-3.5 text-base font-bold text-zinc-100 transition-opacity hover:opacity-90"
 			>
 				Get Started
 			</button>
@@ -114,12 +114,12 @@
 				{#each terminalLines as line, i (i)}
 					{#if line.type === 'command'}
 						<p class="text-white">
-							<span class="mr-2 text-[#013529] select-none">$</span>{line.text}
+							<span class="mr-2 text-[#013505] select-none">$</span>{line.text}
 						</p>
 					{:else if line.type === 'status'}
-						<p class="font-semibold text-[#003025]">{line.text}</p>
+						<p class="font-semibold text-[#003000]">{line.text}</p>
 					{:else if line.type === 'link'}
-						<p class="text-[#003327]">{line.text}</p>
+						<p class="text-[#093300]">{line.text}</p>
 					{:else}
 						<p class="text-[#a4a8b0]">{line.text}</p>
 					{/if}
@@ -182,17 +182,17 @@
 	<div class="grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
 		<div class="space-y-6 lg:col-span-5">
 			<h2 class="font-mono text-3xl leading-tight font-bold tracking-tight md:text-4xl">
-				Simple syntax, <span class="block text-[#00f5c4] sm:inline">powerful results</span>
+				Simple syntax, <span class="block text-[#002e23] sm:inline">powerful results</span>
 			</h2>
 
 			<p class="max-w-lg font-mono text-sm leading-relaxed text-[#8e929a] md:text-base">
-				Extract exactly what you need with intuitive commands. No need to memorize cryptic flags.
+				Extract exactly what you need. No need to memorize cryptic flags.
 			</p>
 
 			<ul class="space-y-3.5 pt-2 font-mono text-sm md:text-base">
 				{#each bulletPoints as point (point.id)}
 					<li class="flex items-center text-[#a4a8b0]">
-						<span class="mr-3.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#00f5c4]"></span>
+						<span class="mr-3.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#002e23]"></span>
 						{point.text}
 					</li>
 				{/each}
@@ -201,13 +201,13 @@
 
 		<div class="lg:col-span-7">
 			<div
-				class="w-full space-y-6 rounded-md border border-white/5 bg-[#0d0f13] p-6 font-mono text-sm leading-relaxed shadow-xl md:p-8 md:text-[0.95rem]"
+				class="w-full space-y-6 rounded-xl border border-white/5 bg-[#0d0f13] p-6 font-mono text-sm leading-relaxed shadow-xl md:p-8 md:text-[0.95rem]"
 			>
 				{#each codeExamples as example (example.id)}
 					<div class="space-y-1">
 						<p class="text-[#545861] select-none">{example.comment}</p>
 						<p class="break-all text-white">
-							<span class="mr-2.5 text-[#00f5c4] select-none">$</span>{example.command}
+							<span class="mr-2.5 text-[#175305] select-none">$</span>{example.command}
 						</p>
 					</div>
 				{/each}
@@ -216,7 +216,7 @@
 	</div>
 </section>
 <section
-	class="jetbrains-mono-400 flex flex-col items-center border-t bg-[#18181B] px-6 pt-32 text-white selection:bg-[#00f5c4]/30 md:px-12"
+	class="jetbrains-mono-400 h-screen flex flex-col justify-center items-center bg-[#060709] px-6 pt-32 text-white selection:bg-[#00f5c4]/30 md:px-12"
 >
 	<div class="mb-36 flex max-w-2xl flex-col items-center text-center">
 		<h2 class="jetbrains-mono-600 mb-5 text-3xl font-bold tracking-tight md:text-4xl">
@@ -226,7 +226,7 @@
 			Get started in seconds. Works on macOS, Linux, and Windows.
 		</p>
 		<button
-			class="jetbrains-mono-300 flex items-center gap-2 rounded bg-[#00f5c4] px-7 py-3.5 font-sans text-base font-bold text-[#060709] transition-opacity hover:opacity-90"
+			class="jetbrains-mono-300 flex items-center gap-2 rounded bg-[#002e23e5] px-7 py-3.5 font-sans text-base font-bold text-[#f8f8f8] transition-opacity hover:opacity-90"
 		>
 			Download sget <span class="text-lg">&rarr;</span>
 		</button>

@@ -48,7 +48,84 @@ PageInfo parseData(const NetworkResponse &netData, const std::string &url)
     info.downloadSpeed = netData.downloadSpeed;
     info.redirectCount = netData.redirectCount;
 
+    // Handling Links Extraction
+    std::regex linkRegex("<a\\s+[^>]*href=[\"']([^\"']+)[\"']", std::regex_constants::icase);
+    auto links_begin = std::sregex_iterator(netData.html.begin(), netData.html.end(), linkRegex);
+    auto links_end = std::sregex_iterator();
+
+    for (std::sregex_iterator i = links_begin; i != links_end; ++i)
+    {
+        std::smatch match = *i;
+        info.links.push_back(match[1].str());
+    }
+
     return info;
+}
+
+void printSecurityMode(const PageInfo &info)
+{
+    std::cout << Color::CYAN << Color::BOLD << "\n---- Security Check: " << info.url << " ----" << Color::RESET << "\n";
+
+
+    std::cout << Color::YELLOW << "\n[ HTTP Headers ]" << Color::RESET << "\n";
+
+    std::vector<std::pair<std::string, std::string>> headersToCheck = {
+        {"content-security-policy", "Content-Security-Policy"},
+        {"x-frame-options", "X-Frame-Options"},
+        {"x-content-type-options", "X-Content-Type-Options"},
+        {"strict-transport-security", "Strict-Transport-Security"},
+        {"x-xss-protection", "X-XSS-Protection"},
+        {"referrer-policy", "Referrer-Policy"},
+        {"permissions-policy", "Permissions-Policy"}};
+
+    // Normalize headers to lowercase for non-opinionated, case-insensitive evaluation
+    std::string lowerHeaders = info.rawHeaders;
+    std::transform(lowerHeaders.begin(), lowerHeaders.end(), lowerHeaders.begin(), ::tolower);
+
+    for (const auto &item : headersToCheck)
+    {
+        bool isAvailable = (lowerHeaders.find(item.first) != std::string::npos);
+
+        if (isAvailable)
+        {
+            std::cout << Color::GREEN << "  [+] " << Color::RESET
+                      << std::setw(30) << std::left << item.second
+                      << " : Available\n";
+        }
+        else
+        {
+            std::cout << Color::RED << "  [-] " << Color::RESET
+                      << std::setw(30) << std::left << item.second
+                      << " : Missing\n";
+        }
+    }
+
+    // 2. Raw Token/Pattern Matches
+    std::cout << Color::YELLOW << "\n[ Content Signatures ]" << Color::RESET << "\n";
+
+    std::vector<std::pair<std::string, std::string>> signaturesToCheck = {
+        {"(AIza[0-9A-Za-z-_]{35})", "Google API Key Pattern"},
+        {"amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", "AWS MWS Auth Token Pattern"}};
+
+    for (const auto &sig : signaturesToCheck)
+    {
+        std::regex pattern(sig.first);
+        bool isAvailable = std::regex_search(info.rawHtml, pattern);
+
+        if (isAvailable)
+        {
+            std::cout << Color::GREEN << "  [+] " << Color::RESET
+                      << std::setw(30) << std::left << sig.second
+                      << " : Present in Source\n";
+        }
+        else
+        {
+            std::cout << Color::RED << "  [-] " << Color::RESET
+                      << std::setw(30) << std::left << sig.second
+                      << " : Absent from Source\n";
+        }
+    }
+    std::cout << "\n";
 }
 
 void printInfoMode(const PageInfo &info)
@@ -113,6 +190,18 @@ void printDetailedMode(const PageInfo &info)
 
     std::cout << Color::CYAN << Color::BOLD << "================================" << Color::RESET << "\n"
               << std::endl;
+}
+
+void printLinksMode(const PageInfo &info)
+{
+    std::cout << Color::CYAN << Color::BOLD << "\n=== Extracted Hyperlinks ===" << Color::RESET << std::endl;
+    std::cout << Color::GRAY << "Found " << info.links.size() << " links on " << info.url << Color::RESET << "\n\n";
+
+    for (size_t i = 0; i < info.links.size(); ++i)
+    {
+        std::cout << Color::BOLD << "[" << i + 1 << "] " << Color::RESET << Color::BLUE << info.links[i] << Color::RESET << std::endl;
+    }
+    std::cout << "\n";
 }
 
 void printJsonMode(const PageInfo &info)

@@ -42,7 +42,7 @@
             {/each}
             <a
                 href={resolve("/contact")}
-                class="bg-[#0b5849] rounded-xl jetbrains-mono-600 px-5.5 py-2.5 text-sm font-bold text-[#0a0a0a] transition-opacity hover:opacity-90"
+                class="bg-[#0b5849] rounded-xl jetbrains-mono-600 px-5.5 py-2.5 text-sm font-bold text-zinc-100 transition-opacity hover:opacity-90"
             >
                 Get in touch
             </a>

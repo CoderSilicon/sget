@@ -1,9 +1,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <chrono>
+#include <thread>
+#include <curl/curl.h>
 #include "network.hpp"
 #include "parser.hpp"
-#include "colors.hpp" 
+#include "colors.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -12,6 +16,7 @@
 void enableWindowsColors()
 {
 #ifdef _WIN32
+    SetConsoleOutputCP(65001);
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hOut != INVALID_HANDLE_VALUE)
     {
@@ -30,6 +35,10 @@ enum class RunMode
     INFO,
     BINFO,
     JSON,
+    SECURITY,
+    LINKS,
+    DOWNLOAD,
+    MATRIX,
     INVALID
 };
 
@@ -37,6 +46,7 @@ enum class RunMode
 struct AppConfig
 {
     std::string url = "";
+    std::string outputFile = "";
     RunMode mode = RunMode::INFO;
     bool exitEarly = false;
 };
@@ -52,12 +62,14 @@ void printHelp()
     std::cout << Color::YELLOW << "USAGE:" << Color::RESET << "\n";
     std::cout << "  sget [options] <URL>\n\n";
 
-    std::cout << Color::YELLOW << "EXTRACTION MODES:" << Color::RESET << "\n";
+    std::cout << Color::YELLOW << "Working flags:" << Color::RESET << "\n";
     std::cout << "  " << Color::GREEN << "--info" << Color::RESET << "      Standard metadata extraction (Default)\n";
     std::cout << "  " << Color::GREEN << "--binfo" << Color::RESET << "     Deep and detailed header extraction\n";
-    std::cout << "  " << Color::GREEN << "--json" << Color::RESET << "      Raw JSONextraction\n\n";
+    std::cout << "  " << Color::GREEN << "--json" << Color::RESET << "      Raw JSONextraction\n";
+    std::cout << "  " << Color::GREEN << "--links" << Color::RESET << "     Extract all hyperlinks from the page\n\n";
+    std::cout << "  " << Color::GREEN << "--download" << Color::RESET << "  Download the target asset with visual progress\n\n";
 
-    std::cout << Color::YELLOW << "SYSTEM FLAGS:" << Color::RESET << "\n";
+    std::cout << Color::YELLOW << "Default Flags:" << Color::RESET << "\n";
     std::cout << "  " << Color::GREEN << "--help" << Color::RESET << "      Manual\n";
     std::cout << "  " << Color::GREEN << "--version" << Color::RESET << "   Display core compiler version\n";
     std::cout << "  " << Color::GREEN << "--author" << Color::RESET << "    Display the dev\n\n";
@@ -78,13 +90,55 @@ void printAuthor()
               << Color::GRAY << "> It is always better to differ from others." << Color::RESET << "\n";
 }
 
-// 3. The Parser Engine
+void triggerMatrix()
+{
+    std::cout << Color::GREEN << "01101001 01101110 01110100 01101001 01100001 01101100 01101001 01111010 01101001 01101110 01100111 00100000 01101101 01100001 01110100 01110010 01101001 01111000." << Color::RESET << "\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(700));
+
+    uintptr_t baseAddr = 0x7fff5fbff000;
+
+    for (int i = 0; i < 120; ++i)
+    {
+        std::cout << Color::GREEN << "0x" << std::hex << baseAddr << "  " << Color::RESET;
+        baseAddr += 16;
+
+        for (int j = 0; j < 8; ++j)
+        {
+            int rawByte = rand() % 256;
+            if (rawByte < 16)
+                std::cout << "0";
+            std::cout << std::hex << rawByte << " ";
+        }
+
+        std::cout << Color::GRAY << "| " << Color::RESET;
+
+        for (int j = 0; j < 12; ++j)
+        {
+
+            char printableChar = (rand() % 94) + 33;
+            if (printableChar == '[' || printableChar == ']' || printableChar == '%')
+            {
+                printableChar = '.';
+            }
+            std::cout << Color::GREEN << printableChar << Color::RESET;
+        }
+
+        std::cout << "\n";
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(12));
+    }
+
+    std::cout << Color::GREEN << Color::BOLD << "\n[SUCCESS] FATAL CORE DUMP COMPLETED. STAY IN THE SIMULATION.\n\n"
+              << Color::RESET;
+}
+// Engine
 AppConfig parseCLI(const std::vector<std::string> &args)
 {
     AppConfig config;
 
-    for (const auto &arg : args)
+    for (size_t i = 0; i < args.size(); ++i)
     {
+        const std::string &arg = args[i];
         // Non-network modes
         if (arg == "--help" || arg == "-h")
         {
@@ -98,24 +152,55 @@ AppConfig parseCLI(const std::vector<std::string> &args)
             config.exitEarly = true;
             return config;
         }
-        else if (arg == "--author")
+        else if (arg == "--author" || arg == "-aCs")
         {
             printAuthor();
             config.exitEarly = true;
             return config;
         }
+        else if (arg == "--matrix" || "-mmen")
+        {
+            config.mode = RunMode::MATRIX;
+        }
         // True Modes
-        else if (arg == "--info")
+        else if (arg == "--info" || arg == "-i")
         {
             config.mode = RunMode::INFO;
         }
-        else if (arg == "--binfo")
+        else if (arg == "--binfo" || arg == "-bi")
         {
             config.mode = RunMode::BINFO;
         }
-        else if (arg == "--json")
+        else if (arg == "--json" || arg == "-j")
         {
             config.mode = RunMode::JSON;
+        }
+        else if (arg == "--links" || arg == "-l")
+        {
+            config.mode = RunMode::LINKS;
+        }
+        else if (arg == "--security" || arg == "-s")
+        {
+            config.mode = RunMode::SECURITY;
+        }
+        else if (arg == "--download" || arg == "-d")
+        { // <-- Add this block
+            config.mode = RunMode::DOWNLOAD;
+        }
+        else if (arg == "--output" || arg == "-o")
+        {
+            if (i + 1 < args.size())
+            {
+                config.outputFile = args[++i]; // Grab the next argument and increment i
+            }
+            else
+            {
+                std::cerr << Color::RED << "Error: --output requires a filename argument.\n"
+                          << Color::RESET;
+                config.mode = RunMode::INVALID;
+                config.exitEarly = true;
+                return config;
+            }
         }
         // Catch unknown flags
         else if (arg.rfind("--", 0) == 0 || arg.rfind("-", 0) == 0)
@@ -139,6 +224,7 @@ AppConfig parseCLI(const std::vector<std::string> &args)
 int main(int argc, char *argv[])
 {
     enableWindowsColors();
+    curl_global_init(CURL_GLOBAL_ALL);
 
     std::vector<std::string> args(argv + 1, argv + argc);
 
@@ -157,11 +243,40 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    if (config.url.empty())
+    if (config.url.empty() && config.mode != RunMode::MATRIX )
     {
         std::cerr << Color::RED << "Error: Missing target URL.\n"
                   << Color::RESET;
         return 1;
+    }
+
+    if (config.mode == RunMode::DOWNLOAD)
+    {
+        // Extract a basic filename from the URL, or default to "downloaded_file.out"
+        std::string filename = "downloaded_file.out";
+        size_t pos = config.url.find_last_of('/');
+        if (pos != std::string::npos && pos + 1 < config.url.length())
+        {
+            filename = config.url.substr(pos + 1);
+        }
+
+        std::cout << Color::CYAN << "Initializing download for: " << Color::RESET << filename << "\n\n";
+
+        bool success = downloadFile(config.url, filename);
+        if (success)
+        {
+            std::cout << "\n\n"
+                      << Color::GREEN << Color::BOLD << "Download Complete: "
+                      << Color::RESET << filename << "\n";
+        }
+        return success ? 0 : 1;
+    }
+
+    if (config.mode == RunMode::MATRIX)
+    {
+        triggerMatrix();
+        curl_global_cleanup();
+        return 0;
     }
 
     NetworkResponse response = fetchWebpage(config.url);
@@ -174,6 +289,26 @@ int main(int argc, char *argv[])
 
     PageInfo info = parseData(response, config.url);
 
+    std::ofstream outFile;
+    std::streambuf *originalCoutBuffer = std::cout.rdbuf(); // Save the terminal buffer
+
+    if (!config.outputFile.empty())
+    {
+        outFile.open(config.outputFile, std::ios::out | std::ios::app);
+        if (outFile.is_open())
+        {
+            // Redirect all standard std::cout calls directly to the hard drive
+            std::cout.rdbuf(outFile.rdbuf());
+        }
+        else
+        {
+            std::cerr << Color::RED << "Error: Could not open " << config.outputFile << " for writing.\n"
+                      << Color::RESET;
+            curl_global_cleanup();
+            return 1;
+        }
+    }
+
     switch (config.mode)
     {
     case RunMode::INFO:
@@ -185,8 +320,22 @@ int main(int argc, char *argv[])
     case RunMode::JSON:
         printJsonMode(info);
         break;
+    case RunMode::SECURITY:
+        printSecurityMode(info);
+        break;
+    case RunMode::LINKS:
+        printLinksMode(info);
+        break;
     case RunMode::INVALID:
         return 1;
+    }
+
+    if (outFile.is_open())
+    {
+        // Give cout back to the terminal so the program exits cleanly
+        std::cout.rdbuf(originalCoutBuffer);
+        outFile.close();
+        std::cout << Color::GREEN << "Successfully wrote output to: " << config.outputFile << Color::RESET << "\n";
     }
 
     return 0;

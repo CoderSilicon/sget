@@ -18,5 +18,6 @@ struct NetworkResponse {
 };
 
 NetworkResponse fetchWebpage(const std::string& url);
+bool downloadFile(const std::string& url, const std::string& outputPath);
 
 #endif // NETWORK_HPP
